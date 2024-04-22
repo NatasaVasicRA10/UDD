@@ -1,0 +1,27 @@
+<div class="container">
+    <form (submit)="submitFileUploadForm($event, fileInput)" #fileUploadForm="ngForm">
+        <input type="file" #fileInput required>
+        <button type="submit">Upload File</button>
+    </form>
+    <div *ngIf="successMessage" class="alert">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="alert">{{ errorMessage }}</div>
+</div>
+
+<div class="container">
+    <form (ngSubmit)="submitQuery()" [formGroup]="queryForm">
+        <div class="input-group">
+            <input type="text" class="form-control" formControlName="query" placeholder="Enter keywords">
+        </div>
+        <div class="radio-buttons">
+            <label class="radio-inline">
+                <input type="radio" formControlName="queryType" [value]="'simple'"
+                    [checked]="queryForm.controls['queryType'].value === 'simple'"> Simple Search
+            </label>
+            <label class="radio-inline">
+                <input type="radio" formControlName="queryType" [value]="'advanced'"
+                    [checked]="queryForm.controls['queryType'].value === 'advanced'"> Advanced Search
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
