@@ -24,6 +24,7 @@ public class ElasticsearchConfiguration
 
     @Override
     public ClientConfiguration clientConfiguration() {
-    	return ClientConfiguration.builder().connectedTo(host + ":" + port).build();
+        return ClientConfiguration.builder().connectedTo(host + ":" + port)
+            .withBasicAuth(userName, password).build();
     }
 }
