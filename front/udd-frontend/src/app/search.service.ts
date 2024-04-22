@@ -10,6 +10,7 @@ export class SearchService {
   private baseUrl = environment.baseUrl;
   private indexUrl = "api/index";
   private searchUrl = "api/search";
+  private fileUrl = "api/file";
 
   constructor(private http: HttpClient) { }
 
@@ -23,5 +24,9 @@ export class SearchService {
 
   searchAdvanced(query: any) {
     return this.http.post(`${this.baseUrl}${this.searchUrl}/advanced`, query);
+  }
+
+  generateDownloadLink(serverFilename: string): string {
+    return `${this.baseUrl}${this.fileUrl}/${serverFilename}`;
   }
 }
