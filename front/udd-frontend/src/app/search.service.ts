@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { LoginDTO } from 'src/app/DTO/LoginDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class SearchService {
   private indexUrl = "api/index";
   private searchUrl = "api/search";
   private fileUrl = "api/file";
+  private loginUrl = "api/file";
 
   constructor(private http: HttpClient) { }
 
@@ -28,5 +30,9 @@ export class SearchService {
 
   generateDownloadLink(serverFilename: string): string {
     return `${this.baseUrl}${this.fileUrl}/${serverFilename}`;
+  }
+
+  login(loginDTO: LoginDTO) {
+    return this.http.post(`${this.baseUrl}${this.loginUrl}`, loginDTO)
   }
 }
