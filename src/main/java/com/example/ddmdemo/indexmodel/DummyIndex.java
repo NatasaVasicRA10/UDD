@@ -35,4 +35,19 @@ public class DummyIndex {
 
     @Field(type = FieldType.Integer, store = true, name = "database_id")
     private Integer databaseId;
+    
+    @Field(type = FieldType.Text, store = true, name = "firstName")
+    private String firstName;
+    
+    @Field(type = FieldType.Text, store = true, name = "lastName")
+    private String lastName;
+    
+    @Field(type = FieldType.Text, store = true, name = "governmentName")
+    private String governmentName;
+    
+    @Field(type = FieldType.Text, store = true, name = "administrationLevel")
+    private String administrationLevel;
+    
+    @Field(type = FieldType.Text, store = true, name = "address")
+    private String address;
 }

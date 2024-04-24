@@ -8,10 +8,13 @@ import com.example.ddmdemo.model.DummyTable;
 import com.example.ddmdemo.respository.DummyRepository;
 import com.example.ddmdemo.service.interfaces.FileService;
 import com.example.ddmdemo.service.interfaces.IndexingService;
+import com.example.ddmdemo.util.TemplateParser;
+
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +37,6 @@ public class IndexingServiceImpl implements IndexingService {
 
     private final LanguageDetector languageDetector;
 
-
     @Override
     @Transactional
     public String indexDocument(MultipartFile documentFile) {
@@ -46,6 +48,16 @@ public class IndexingServiceImpl implements IndexingService {
         newEntity.setTitle(title);
 
         var documentContent = extractDocumentContent(documentFile);
+        
+        List<String> extractedFields = TemplateParser.parseTemplate(documentContent);
+        if (!extractedFields.isEmpty()) {
+        	newIndex.setGovernmentName(extractedFields.get(0));
+        	newIndex.setAdministrationLevel(extractedFields.get(1));
+        	newIndex.setAddress(extractedFields.get(2));
+        	newIndex.setFirstName(extractedFields.get(3));
+        	newIndex.setLastName(extractedFields.get(4));
+        }
+        
         if (detectLanguage(documentContent).equals("SR")) {
             newIndex.setContentSr(documentContent);
         } else {
