@@ -1,5 +1,6 @@
 package com.example.ddmdemo.controller;
 
+import com.example.ddmdemo.dto.BooleanDTO;
 import com.example.ddmdemo.dto.SearchQueryDTO;
 import com.example.ddmdemo.indexmodel.DummyIndex;
 import com.example.ddmdemo.service.interfaces.SearchService;
@@ -35,5 +36,10 @@ public class SearchController {
     @GetMapping("/simpleSearch")
     public Page<DummyIndex> search(@RequestParam String field, @RequestParam String text, Pageable pageable) {
     	return searchService.simpleSearch(field, text, pageable);
+    }
+    
+    @PostMapping("/boolean")
+    public Page<DummyIndex> search(@RequestBody BooleanDTO booleanDTO, Pageable pageable) {
+    	return searchService.booleanSearch(booleanDTO, pageable);
     }
 }

@@ -3,6 +3,7 @@ package com.example.ddmdemo.service.impl;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 
+import com.example.ddmdemo.dto.BooleanDTO;
 import com.example.ddmdemo.exceptionhandling.exception.MalformedQueryException;
 import com.example.ddmdemo.indexmodel.DummyIndex;
 import com.example.ddmdemo.service.interfaces.SearchService;
@@ -58,6 +59,14 @@ public class SearchServiceImpl implements SearchService {
         return runQuery(searchQueryBuilder.build());
     }
     
+    public Page<DummyIndex> booleanSearch(BooleanDTO booleanDTO, Pageable pageable) {
+        var searchQueryBuilder =
+            new NativeQueryBuilder().withQuery(buildBooleanSearchQuery(booleanDTO))
+                .withPageable(pageable);
+
+        return runQuery(searchQueryBuilder.build());
+    }
+    
     private Query buildSimpleSearchQuery(List<String> tokens) {
         return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
             tokens.forEach(token -> {
@@ -103,6 +112,37 @@ public class SearchServiceImpl implements SearchService {
     	return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> b.must(sb -> sb.match(
                 m -> m.field(field).fuzziness(Fuzziness.ONE.asString()).query(text)))
         )))._toQuery();
+    }
+    
+    
+    private Query buildBooleanSearchQuery(BooleanDTO booleanDTO) {
+    	String operation = booleanDTO.getOperation();
+    	var field1 = booleanDTO.getField1();
+        var value1 = booleanDTO.getValue1();
+        var field2 = booleanDTO.getField2();
+        var value2 = booleanDTO.getValue2();
+        
+        return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
+            switch (operation) {
+                case "AND":
+                    b.must(sb -> sb.match(
+                        m -> m.field(field1).fuzziness(Fuzziness.ONE.asString()).query(value1)));
+                    b.must(sb -> sb.match(m -> m.field(field2).query(value2)));
+                    break;
+                case "OR":
+                    b.should(sb -> sb.match(
+                        m -> m.field(field1).fuzziness(Fuzziness.ONE.asString()).query(value1)));
+                    b.should(sb -> sb.match(m -> m.field(field2).query(value2)));
+                    break;
+                case "NOT":
+                    b.must(sb -> sb.match(
+                        m -> m.field(field1).fuzziness(Fuzziness.ONE.asString()).query(value1)));
+                    b.mustNot(sb -> sb.match(m -> m.field(field2).query(value2)));
+                    break;
+            }
+
+            return b;
+        })))._toQuery();
     }
 
     private Page<DummyIndex> runQuery(NativeQuery searchQuery) {

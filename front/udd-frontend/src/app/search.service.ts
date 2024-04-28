@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { LoginDTO } from 'src/app/DTO/LoginDTO';
+import { BooleanSearchDTO } from './DTO/BooleanSearchDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -38,5 +39,9 @@ export class SearchService {
 
   simpleSearch(field: string, text: string) {
     return this.http.get(`${this.baseUrl}${this.searchUrl}/simpleSearch?field=${field}&text=${text}`)
+  }
+
+  booleanSearch(booleanSearchDto: BooleanSearchDTO) {
+    return this.http.post(`${this.baseUrl}${this.searchUrl}/boolean`, booleanSearchDto)
   }
 }

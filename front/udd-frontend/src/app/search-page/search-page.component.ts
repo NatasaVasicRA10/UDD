@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SearchService } from '../search.service';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { BooleanSearchDTO } from '../DTO/BooleanSearchDTO';
 
 interface SearchResult {
   title: string;
@@ -23,6 +24,13 @@ export class SearchPageComponent implements OnInit {
   simpleSearchForm = new FormGroup({
     field: new FormControl(''),
     text: new FormControl('')
+  })
+  advancedSearchForm = new FormGroup({
+    field1: new FormControl(''),
+    value1: new FormControl(''),
+    operation: new FormControl(''),
+    field2: new FormControl(''),
+    value2: new FormControl('')
   })
 
   ngOnInit(): void {
@@ -80,17 +88,22 @@ export class SearchPageComponent implements OnInit {
   }
 
   displayResults(data: any) {
-    this.results = data.content.map((result: SearchResult) => {
-      const contentToDisplay = result.contentSr !== null ? result.contentSr : result.contentEn;
-      return {
-        title: result.title,
-        content: contentToDisplay,
-        downloadLink: this.searchService.generateDownloadLink(result.serverFilename),
-        downloadTitle: result.title.replace(/\s+/g, '-')
-      };
-    });
-
-    this.resultsContainerVisible = this.results.length > 0;
+    if (data.content && data.content.length > 0) {
+      this.results = data.content.map((result: SearchResult) => {
+        const contentToDisplay = result.contentSr !== null ? result.contentSr : result.contentEn;
+        return {
+          title: result.title,
+          content: contentToDisplay,
+          downloadLink: this.searchService.generateDownloadLink(result.serverFilename),
+          downloadTitle: result.title.replace(/\s+/g, '-')
+        };
+      });
+      this.resultsContainerVisible = true;
+    } else {
+      this.results = [];
+      this.resultsContainerVisible = false;
+      alert('No results found');
+    }
   }
 
   clearResults() {
@@ -103,6 +116,37 @@ export class SearchPageComponent implements OnInit {
     const text = this.simpleSearchForm.value.text!;
 
     this.searchService.simpleSearch(field, text).subscribe({
+      next: (data: any) => {
+        if (data.content && data.content.length > 0) {
+          this.displayResults(data);
+        } else {
+          alert('No results found');
+          this.results = [];
+          this.resultsContainerVisible = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error executing search:', error);
+      }
+    });
+  }
+
+  submitAdvancedSearch() {
+    const field1 = this.advancedSearchForm.value.field1;
+    const value1 = this.advancedSearchForm.value.value1;
+    const operation = this.advancedSearchForm.value.operation;
+    const field2 = this.advancedSearchForm.value.field2;
+    const value2 = this.advancedSearchForm.value.value2;
+
+    let searchResultDto = new BooleanSearchDTO({
+      field1,
+      value1,
+      field2,
+      value2,
+      operation
+    })
+
+    this.searchService.booleanSearch(searchResultDto).subscribe({
       next: (data: any) => {
         if (data.content && data.content.length > 0) {
           this.displayResults(data);
