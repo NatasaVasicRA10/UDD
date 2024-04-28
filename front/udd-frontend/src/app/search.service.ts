@@ -35,4 +35,8 @@ export class SearchService {
   login(loginDTO: LoginDTO) {
     return this.http.post(`${this.baseUrl}${this.loginUrl}`, loginDTO)
   }
+
+  simpleSearch(field: string, text: string) {
+    return this.http.get(`${this.baseUrl}${this.searchUrl}/simpleSearch?field=${field}&text=${text}`)
+  }
 }

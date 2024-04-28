@@ -2,10 +2,12 @@ package com.example.ddmdemo.service.impl;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+
 import com.example.ddmdemo.exceptionhandling.exception.MalformedQueryException;
 import com.example.ddmdemo.indexmodel.DummyIndex;
 import com.example.ddmdemo.service.interfaces.SearchService;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.springframework.data.domain.Page;
@@ -24,7 +26,7 @@ public class SearchServiceImpl implements SearchService {
     private final ElasticsearchOperations elasticsearchTemplate;
 
     @Override
-    public Page<DummyIndex> simpleSearch(List<String> keywords, Pageable pageable) {
+    public Page<DummyIndex> simple(List<String> keywords, Pageable pageable) {
         var searchQueryBuilder =
             new NativeQueryBuilder().withQuery(buildSimpleSearchQuery(keywords))
                 .withPageable(pageable);
@@ -46,7 +48,16 @@ public class SearchServiceImpl implements SearchService {
 
         return runQuery(searchQueryBuilder.build());
     }
+       
+    @Override
+    public Page<DummyIndex> simpleSearch(String field, String text, Pageable pageable) {
+    	var searchQueryBuilder =
+                new NativeQueryBuilder().withQuery(buildSearchSimpleQuery(field, text))
+                    .withPageable(pageable);
 
+        return runQuery(searchQueryBuilder.build());
+    }
+    
     private Query buildSimpleSearchQuery(List<String> tokens) {
         return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
             tokens.forEach(token -> {
@@ -86,6 +97,12 @@ public class SearchServiceImpl implements SearchService {
 
             return b;
         })))._toQuery();
+    }
+    
+    private Query buildSearchSimpleQuery(String field, String text) {
+    	return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> b.must(sb -> sb.match(
+                m -> m.field(field).fuzziness(Fuzziness.ONE.asString()).query(text)))
+        )))._toQuery();
     }
 
     private Page<DummyIndex> runQuery(NativeQuery searchQuery) {

@@ -26,6 +26,29 @@
     </form>
 </div>
 
+<div class="container">
+    <div class="content">
+        <h1>Simple search</h1>
+        <form (ngSubmit)="submitSimpleSearch()">
+            <div class="input-group">
+                <label for="field">Choose field</label>
+                <select class="form-control" name="field" id="field" [(ngModel)]="simpleSearchForm.value.field">
+                    <option value="firstName">First name</option>
+                    <option value="lastName">Last name</option>
+                    <option value="governmentName">Government name</option>
+                    <option value="administrationLevel">Administration level</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="text">Enter value</label>
+                <input type="text" class="form-control" name="text" id="text" [(ngModel)]="simpleSearchForm.value.text">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        <button (click)="clearResults()" class="clear-results-button">Clear Results</button>
+    </div>
+</div>
+
 <div class="container" *ngIf="resultsContainerVisible">
     <div class="row" id="results">
         <div class="col-md-6" *ngFor="let result of results">

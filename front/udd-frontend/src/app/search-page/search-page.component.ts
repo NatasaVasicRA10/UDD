@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SearchService } from '../search.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 interface SearchResult {
   title: string;
@@ -20,6 +20,10 @@ export class SearchPageComponent implements OnInit {
   queryForm: FormGroup;
   resultsContainerVisible = false;
   results: any[] = [];
+  simpleSearchForm = new FormGroup({
+    field: new FormControl(''),
+    text: new FormControl('')
+  })
 
   ngOnInit(): void {
   }
@@ -87,5 +91,30 @@ export class SearchPageComponent implements OnInit {
     });
 
     this.resultsContainerVisible = this.results.length > 0;
+  }
+
+  clearResults() {
+    this.results = [];
+    this.resultsContainerVisible = false;
+  }
+
+  submitSimpleSearch() {
+    const field = this.simpleSearchForm.value.field!;
+    const text = this.simpleSearchForm.value.text!;
+
+    this.searchService.simpleSearch(field, text).subscribe({
+      next: (data: any) => {
+        if (data.content && data.content.length > 0) {
+          this.displayResults(data);
+        } else {
+          alert('No results found');
+          this.results = [];
+          this.resultsContainerVisible = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error executing search:', error);
+      }
+    });
   }
 }

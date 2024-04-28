@@ -87,3 +87,25 @@ button:hover {
 .radio-buttons label {
     margin-right: 10px;
 }
+
+.input-group select {
+    width: 94%;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.input-group input[type="text"] {
+    width: 90%;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.clear-results-button {
+    margin-top: 10px;
+}
