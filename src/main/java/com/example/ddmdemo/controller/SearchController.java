@@ -24,7 +24,7 @@ public class SearchController {
     @PostMapping("/simple")
     public Page<DummyIndex> simpleSearch(@RequestBody SearchQueryDTO simpleSearchQuery,
                                          Pageable pageable) {
-        return searchService.simple(simpleSearchQuery.keywords(), pageable);
+        return searchService.simple(simpleSearchQuery.keywords(), simpleSearchQuery.isPhaseQuery(), pageable);
     }
 
     @PostMapping("/advanced")

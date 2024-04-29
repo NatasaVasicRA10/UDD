@@ -27,9 +27,9 @@ public class SearchServiceImpl implements SearchService {
     private final ElasticsearchOperations elasticsearchTemplate;
 
     @Override
-    public Page<DummyIndex> simple(List<String> keywords, Pageable pageable) {
+    public Page<DummyIndex> simple(List<String> keywords, Boolean isPhaseQuery, Pageable pageable) {
         var searchQueryBuilder =
-            new NativeQueryBuilder().withQuery(buildSimpleSearchQuery(keywords))
+            new NativeQueryBuilder().withQuery(buildSimpleSearchQuery(keywords, isPhaseQuery))
                 .withPageable(pageable);
 
         return runQuery(searchQueryBuilder.build());
@@ -67,7 +67,13 @@ public class SearchServiceImpl implements SearchService {
         return runQuery(searchQueryBuilder.build());
     }
     
-    private Query buildSimpleSearchQuery(List<String> tokens) {
+    private Query buildSimpleSearchQuery(List<String> tokens, Boolean isPhaseQuery) {
+    	if (isPhaseQuery) {
+    		String joinedTokens = String.join(" ", tokens);
+    		return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> b.must(sb -> sb.matchPhrase(
+                    m -> m.field("content_sr").query(joinedTokens)))
+            )))._toQuery();
+    	}
         return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
             tokens.forEach(token -> {
                 b.should(sb -> sb.match(
@@ -109,9 +115,15 @@ public class SearchServiceImpl implements SearchService {
     }
     
     private Query buildSearchSimpleQuery(String field, String text) {
-    	return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> b.must(sb -> sb.match(
-                m -> m.field(field).fuzziness(Fuzziness.ONE.asString()).query(text)))
-        )))._toQuery();
+    	if (isPhrase(text)) {
+    		return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> b.must(sb -> sb.matchPhrase(
+                    m -> m.field(field).query(text)))
+            )))._toQuery();
+        } else {
+        	return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> b.must(sb -> sb.match(
+                    m -> m.field(field).fuzziness(Fuzziness.ONE.asString()).query(text)))
+            )))._toQuery();
+        }    	
     }
     
     
@@ -143,6 +155,10 @@ public class SearchServiceImpl implements SearchService {
 
             return b;
         })))._toQuery();
+    }
+    
+    private boolean isPhrase(String text) {
+        return text.contains(" ");
     }
 
     private Page<DummyIndex> runQuery(NativeQuery searchQuery) {

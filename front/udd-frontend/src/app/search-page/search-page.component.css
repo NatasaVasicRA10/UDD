@@ -109,3 +109,8 @@ button:hover {
 .clear-results-button {
     margin-top: 10px;
 }
+
+.phase-query {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

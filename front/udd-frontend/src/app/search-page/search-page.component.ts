@@ -39,7 +39,8 @@ export class SearchPageComponent implements OnInit {
   constructor(private searchService: SearchService, private formBuilder: FormBuilder) {
     this.queryForm = this.formBuilder.group({
       query: [''],
-      queryType: ['simple']
+      queryType: ['simple'],
+      isPhaseQuery: [false]
     });
   }
 
@@ -66,11 +67,28 @@ export class SearchPageComponent implements OnInit {
     }
   }
 
+  togglePhaseQuery() {
+    if (!this.isSimpleSearch()) {
+      this.queryForm.patchValue({ isPhaseQuery: false });
+    }
+  }
+
+  isSimpleSearch() {
+    return this.queryForm.controls['queryType'].value === 'simple';
+  }
+
   submitQuery() {
     if (this.queryForm.valid) {
-      const query = {
-        keywords: this.queryForm.value.query.split(' ')
+      let query: any = {
+        keywords: this.queryForm.value.query.split(' '),
+        isPhaseQuery: false
       };
+
+      if (this.queryForm.value.queryType === 'simple') {
+        if (this.queryForm.value.isPhaseQuery) {
+          query.isPhaseQuery = true;
+        }
+      }
 
       const method = this.queryForm.value.queryType === 'advanced' ? 'searchAdvanced' : 'searchSimple';
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SearchService {
 
-    Page<DummyIndex> simple(List<String> keywords, Pageable pageable);
+    Page<DummyIndex> simple(List<String> keywords, Boolean isPhaseQuery, Pageable pageable);
 
     Page<DummyIndex> advancedSearch(List<String> expression, Pageable pageable);
     
