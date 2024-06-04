@@ -115,6 +115,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ result.title }}</h5>
+                    <p class="card-text" [innerHTML]="result.highlight"></p>
                     <p class="card-text">{{ result.content }}</p>
                     <a [href]="result.downloadLink" class="btn btn-primary"
                         [download]="result.downloadTitle">Download</a>

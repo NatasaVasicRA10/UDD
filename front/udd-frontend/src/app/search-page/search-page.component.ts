@@ -8,6 +8,7 @@ interface SearchResult {
   contentSr: string | null;
   contentEn: string | null;
   serverFilename: string;
+  highlight: string;
 }
 
 @Component({
@@ -94,6 +95,7 @@ export class SearchPageComponent implements OnInit {
 
       this.searchService[method](query).subscribe({
         next: (data: any) => {
+          console.log(data)
           this.displayResults(data);
         },
         error: (error) => {
@@ -113,7 +115,8 @@ export class SearchPageComponent implements OnInit {
           title: result.title,
           content: contentToDisplay,
           downloadLink: this.searchService.generateDownloadLink(result.serverFilename),
-          downloadTitle: result.title.replace(/\s+/g, '-')
+          downloadTitle: result.title.replace(/\s+/g, '-'),
+          highlight: result.highlight
         };
       });
       this.resultsContainerVisible = true;
@@ -135,6 +138,7 @@ export class SearchPageComponent implements OnInit {
 
     this.searchService.simpleSearch(field, text).subscribe({
       next: (data: any) => {
+        console.log(data)
         if (data.content && data.content.length > 0) {
           this.displayResults(data);
         } else {
@@ -166,6 +170,7 @@ export class SearchPageComponent implements OnInit {
 
     this.searchService.booleanSearch(searchResultDto).subscribe({
       next: (data: any) => {
+        console.log(data)
         if (data.content && data.content.length > 0) {
           this.displayResults(data);
         } else {
