@@ -8,13 +8,15 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from './navbar/navbar.component';
+import { VisualizationsPageComponent } from './visualizations-page/visualizations-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SearchPageComponent,
     LoginPageComponent,
-    NavbarComponent
+    NavbarComponent,
+    VisualizationsPageComponent
   ],
   imports: [
     BrowserModule,
